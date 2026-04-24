@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>California Events 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0; --surface: #ffffff;
+    --border: rgba(0,0,0,0.1); --border-strong: rgba(0,0,0,0.2);
+    --text: #1a1a1a; --text-muted: #888; --text-faint: #bbb;
+    --tag-market-bg: #e8f5ee; --tag-market: #2d6e4a;
+    --tag-festival-bg: #eaf3de; --tag-festival: #3b6d11;
+    --tag-fair-bg: #e6f1fb; --tag-fair: #185fa5;
+    --tag-print-bg: #faeeda; --tag-print: #633806;
+    --tag-night-bg: #f1efe8; --tag-night: #444441;
+    --tag-concert-bg: #eeedfe; --tag-concert: #3c3489;
+    --tag-passes-bg: #faeeda; --tag-passes: #854f0b;
+    --tag-community-bg: #fbeaf0; --tag-community: #72243e;
+    --tag-exhibit-bg: #eeedfe; --tag-exhibit: #3c3489;
+    --tag-tour-bg: #e1f5ee; --tag-tour: #0f6e56;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  header { padding: 3rem 2rem 1.5rem; max-width: 760px; margin: 0 auto; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  header h1 { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 400; letter-spacing: 0.04em; }
+  header h1 span { color: var(--text-muted); font-weight: 300; }
+  .tab-bar { display: flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--surface); }
+  .tab-btn { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; padding: 6px 16px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); transition: all 0.15s; }
+  .tab-btn.active { background: var(--text); color: #fff; }
+  .tab-btn:not(:last-child) { border-right: 1px solid var(--border-strong); }
+  main { max-width: 760px; margin: 0 auto; padding: 0 2rem 4rem; }
+  .month-block { margin-bottom: 2.5rem; }
+  .month-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .event-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 8px; display: flex; gap: 1.25rem; align-items: flex-start; transition: border-color 0.15s; position: relative; }
+  .event-card:hover { border-color: var(--border-strong); }
+  .event-card:hover .card-actions { opacity: 1; }
+  .date-col { min-width: 44px; text-align: center; padding-top: 2px; }
+  .date-num { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 300; line-height: 1; }
+  .date-range { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 400; line-height: 1.4; }
+  .date-dow { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); margin-top: 3px; letter-spacing: 0.04em; }
+  .vline { width: 1px; background: var(--border); align-self: stretch; min-height: 36px; flex-shrink: 0; }
+  .card-body { flex: 1; min-width: 0; }
+  .card-name { font-size: 15px; font-weight: 500; margin-bottom: 3px; }
+  .card-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 2px; }
+  .card-desc { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; font-style: italic; }
+  .card-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+  .tag-market { background: var(--tag-market-bg); color: var(--tag-market); }
+  .tag-festival { background: var(--tag-festival-bg); color: var(--tag-festival); }
+  .tag-fair { background: var(--tag-fair-bg); color: var(--tag-fair); }
+  .tag-print { background: var(--tag-print-bg); color: var(--tag-print); }
+  .tag-nightmarket { background: var(--tag-night-bg); color: var(--tag-night); }
+  .tag-concert { background: var(--tag-concert-bg); color: var(--tag-concert); }
+  .tag-passes { background: var(--tag-passes-bg); color: var(--tag-passes); }
+  .tag-community { background: var(--tag-community-bg); color: var(--tag-community); }
+  .tag-exhibit { background: var(--tag-exhibit-bg); color: var(--tag-exhibit); }
+  .tag-tour { background: var(--tag-tour-bg); color: var(--tag-tour); }
+  .card-actions { opacity: 0; display: flex; gap: 6px; align-items: center; transition: opacity 0.15s; flex-shrink: 0; }
+  .btn-icon { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); transition: all 0.15s; }
+  .btn-icon:hover { border-color: var(--border-strong); color: var(--text); }
+  .btn-icon.delete:hover { background: #fee; border-color: #fcc; color: #c00; }
+  .add-btn { display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--text-muted); border: 1px dashed var(--border-strong); border-radius: 10px; padding: 0.75rem 1.25rem; background: transparent; cursor: pointer; width: 100%; text-align: left; transition: all 0.15s; margin-top: 4px; }
+  .add-btn:hover { border-color: var(--text); color: var(--text); background: var(--surface); }
+  .loading { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-faint); text-align: center; padding: 3rem 0; letter-spacing: 0.04em; }
+  .error-msg { font-family: 'DM Mono', monospace; font-size: 12px; color: #c00; text-align: center; padding: 1rem; background: #fee; border-radius: 8px; margin-bottom: 1rem; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 14px; padding: 2rem; width: 100%; max-width: 520px; border: 1px solid var(--border-strong); max-height: 90vh; overflow-y: auto; }
+  .modal h2 { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; margin-bottom: 1.5rem; }
+  .form-row { margin-bottom: 1rem; }
+  .form-row label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 7px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--text); }
+  .form-row textarea { resize: vertical; min-height: 70px; }
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
+  .btn { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 7px; border: 1px solid var(--border-strong); cursor: pointer; background: transparent; color: var(--text-muted); transition: all 0.15s; }
+  .btn:hover { color: var(--text); border-color: var(--text); }
+  .btn-primary { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn-primary:hover { background: #333; }
+  .btn-primary.saving { opacity: 0.6; pointer-events: none; }
+  .link { color: var(--tag-fair); text-decoration: none; font-size: 12.5px; }
+  .link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>california events <span>2026</span></h1>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('Events', this)">events</button>
+    <button class="tab-btn" onclick="switchTab('Concerts', this)">concerts</button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">add event</h2>
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" id="f-name" placeholder="Event name">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Start date</label>
+        <input type="date" id="f-start">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>End date (optional)</label>
+        <input type="date" id="f-end">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Location</label>
+      <input type="text" id="f-location" placeholder="Venue, City, CA">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>Time (optional)</label>
+        <input type="text" id="f-time" placeholder="e.g. 2-6pm">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Category</label>
+        <select id="f-tag">
+          <option value="festival">Festival</option>
+          <option value="market">Market</option>
+          <option value="fair">Art fair</option>
+          <option value="print">Print festival</option>
+          <option value="nightmarket">Night market</option>
+          <option value="concert">Concert</option>
+          <option value="community">Community</option>
+          <option value="exhibit">Exhibition</option>
+          <option value="tour">Walking tour</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Description (optional)</label>
+      <textarea id="f-desc" placeholder="Details, notes..."></textarea>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin:0">
+        <label>URL (optional)</label>
+        <input type="url" id="f-url" placeholder="https://...">
+      </div>
+      <div class="form-row" style="margin:0">
+        <label>Tickets required?</label>
+        <select id="f-tickets">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+    </div>
+    <div id="modal-error" class="error-msg" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveEvent()">save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIGURE THESE BEFORE UPLOADING TO GITHUB ───────────────────────────────
+const AIRTABLE_TOKEN  = 'YOUR_TOKEN_HERE';
+const AIRTABLE_BASE_ID = 'YOUR_BASE_ID_HERE';
+// ──────────────────────────────────────────────────────────────────────────────
+
+const API = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/';
+const HEADERS = {
+  'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
+  'Content-Type': 'application/json'
+};
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+let currentTable = 'Events';
+let editingId = null;
+
+// ─── AIRTABLE API ─────────────────────────────────────────────────────────────
+
+async function fetchRecords(table) {
+  const res = await fetch(API + encodeURIComponent(table) + '?sort[0][field]=Start&sort[0][direction]=asc', { headers: HEADERS });
+  if (!res.ok) throw new Error('Failed to fetch: ' + res.status);
+  const data = await res.json();
+  return data.records.map(r => ({ id: r.id, ...r.fields }));
+}
+
+async function createRecord(table, fields) {
+  const res = await fetch(API + encodeURIComponent(table), {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify({ fields })
+  });
+  if (!res.ok) throw new Error('Failed to create: ' + res.status);
+  return res.json();
+}
+
+async function updateRecord(table, id, fields) {
+  const res = await fetch(API + encodeURIComponent(table) + '/' + id, {
+    method: 'PATCH',
+    headers: HEADERS,
+    body: JSON.stringify({ fields })
+  });
+  if (!res.ok) throw new Error('Failed to update: ' + res.status);
+  return res.json();
+}
+
+async function deleteRecord(table, id) {
+  const res = await fetch(API + encodeURIComponent(table) + '/' + id, {
+    method: 'DELETE',
+    headers: HEADERS
+  });
+  if (!res.ok) throw new Error('Failed to delete: ' + res.status);
+  return res.json();
+}
+
+// ─── RENDERING ────────────────────────────────────────────────────────────────
+
+function parseDate(str) {
+  if (!str) return null;
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+
+function formatDateRange(start, end) {
+  const s = parseDate(start);
+  if (!s) return { num: '?', range: null, dow: '' };
+  const sm = s.getMonth(), sd = s.getDate();
+  if (!end) return { num: String(sd), range: null, dow: DAYS[s.getDay()] };
+  const e = parseDate(end);
+  const em = e.getMonth(), ed = e.getDate();
+  if (sm === em) return { num: null, range: MONTHS[sm].slice(0,3) + ' ' + sd + '-' + ed, dow: DAYS[s.getDay()] + '-' + DAYS[e.getDay()] };
+  return { num: null, range: MONTHS[sm].slice(0,3) + ' ' + sd + '-' + MONTHS[em].slice(0,3) + ' ' + ed, dow: DAYS[s.getDay()] + '-' + DAYS[e.getDay()] };
+}
+
+function tagLabel(tag) {
+  return { festival:'Festival', market:'Market', fair:'Art fair', print:'Print festival', nightmarket:'Night market', concert:'Concert', community:'Community', exhibit:'Exhibition', tour:'Walking tour' }[tag] || tag;
+}
+
+function renderCard(ev) {
+  const fd = formatDateRange(ev.Start, ev.End);
+  const dateHtml = fd.num
+    ? '<div class="date-num">' + fd.num + '</div><div class="date-dow">' + fd.dow + '</div>'
+    : '<div class="date-range">' + fd.range + '</div><div class="date-dow">' + fd.dow + '</div>';
+  let urlHtml = '';
+  if (ev.URL) { try { urlHtml = ' &middot; <a class="link" href="' + ev.URL + '" target="_blank">' + new URL(ev.URL).hostname.replace('www.','') + '</a>'; } catch(e) {} }
+  const timeStr = ev.Time ? ' &middot; ' + ev.Time : '';
+  const ticketsHtml = ev.Tickets === 'yes' ? '<span class="tag tag-passes">tickets required</span>' : '';
+  const tag = (ev.Tag || 'market').toLowerCase();
+  return '<div class="event-card" data-id="' + ev.id + '">'
+    + '<div class="date-col">' + dateHtml + '</div>'
+    + '<div class="vline"></div>'
+    + '<div class="card-body">'
+    + '<div class="card-name">' + (ev.Name || '') + '</div>'
+    + '<div class="card-meta">' + (ev.Location || '') + timeStr + urlHtml + '</div>'
+    + (ev.Desc ? '<div class="card-desc">' + ev.Desc + '</div>' : '')
+    + '<div class="card-tags"><span class="tag tag-' + tag + '">' + tagLabel(tag) + '</span>' + ticketsHtml + '</div>'
+    + '</div>'
+    + '<div class="card-actions">'
+    + '<button class="btn-icon" onclick="openEditModal(\'' + ev.id + '\')" title="Edit">&#9998;</button>'
+    + '<button class="btn-icon delete" onclick="promptDelete(\'' + ev.id + '\')" title="Delete">&#10005;</button>'
+    + '</div></div>';
+}
+
+function groupByMonth(items) {
+  const groups = {};
+  items.forEach(ev => {
+    if (!ev.Start) return;
+    const d = parseDate(ev.Start);
+    const key = d.getFullYear() + '-' + String(d.getMonth()).padStart(2,'0');
+    const label = MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    if (!groups[key]) groups[key] = { label, items: [] };
+    groups[key].items.push(ev);
+  });
+  return Object.keys(groups).sort().map(k => groups[k]);
+}
+
+function renderList(items) {
+  const app = document.getElementById('app');
+  if (!items.length) {
+    app.innerHTML = '<div class="loading">no events yet</div>'
+      + '<button class="add-btn" onclick="openAddModal()">+ add ' + (currentTable === 'Events' ? 'event' : 'concert') + '</button>';
+    return;
+  }
+  const groups = groupByMonth(items);
+  app.innerHTML = groups.map(g =>
+    '<div class="month-block"><div class="month-label">' + g.label + '</div>'
+    + g.items.map(renderCard).join('') + '</div>'
+  ).join('') + '<button class="add-btn" onclick="openAddModal()">+ add ' + (currentTable === 'Events' ? 'event' : 'concert') + '</button>';
+}
+
+// ─── LOAD ─────────────────────────────────────────────────────────────────────
+
+async function load() {
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading">loading...</div>';
+  try {
+    const items = await fetchRecords(currentTable);
+    renderList(items);
+  } catch(e) {
+    app.innerHTML = '<div class="error-msg">Could not load events. Check your Airtable token and base ID.</div>';
+    console.error(e);
+  }
+}
+
+function switchTab(table, btn) {
+  currentTable = table;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  load();
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'add ' + (currentTable === 'Events' ? 'event' : 'concert');
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-start').value = '';
+  document.getElementById('f-end').value = '';
+  document.getElementById('f-location').value = '';
+  document.getElementById('f-time').value = '';
+  document.getElementById('f-tag').value = currentTable === 'Concerts' ? 'concert' : 'festival';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-url').value = '';
+  document.getElementById('f-tickets').value = 'no';
+  document.getElementById('modal-error').style.display = 'none';
+  document.getElementById('save-btn').textContent = 'save';
+  document.getElementById('save-btn').classList.remove('saving');
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function openEditModal(id) {
+  const card = document.querySelector('.event-card[data-id="' + id + '"]');
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'edit event';
+  // Re-fetch from Airtable to populate accurately
+  fetch(API + encodeURIComponent(currentTable) + '/' + id, { headers: HEADERS })
+    .then(r => r.json())
+    .then(data => {
+      const f = data.fields;
+      document.getElementById('f-name').value = f.Name || '';
+      document.getElementById('f-start').value = f.Start || '';
+      document.getElementById('f-end').value = f.End || '';
+      document.getElementById('f-location').value = f.Location || '';
+      document.getElementById('f-time').value = f.Time || '';
+      document.getElementById('f-tag').value = (f.Tag || 'festival').toLowerCase();
+      document.getElementById('f-desc').value = f.Desc || '';
+      document.getElementById('f-url').value = f.URL || '';
+      document.getElementById('f-tickets').value = f.Tickets || 'no';
+      document.getElementById('modal-error').style.display = 'none';
+      document.getElementById('save-btn').textContent = 'save';
+      document.getElementById('save-btn').classList.remove('saving');
+      document.getElementById('modal').classList.add('open');
+      document.getElementById('f-name').focus();
+    })
+    .catch(() => { alert('Could not load event details.'); });
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+}
+
+async function saveEvent() {
+  const name = document.getElementById('f-name').value.trim();
+  const start = document.getElementById('f-start').value;
+  if (!name || !start) {
+    document.getElementById('modal-error').textContent = 'Name and start date are required.';
+    document.getElementById('modal-error').style.display = 'block';
+    return;
+  }
+  const fields = {
+    Name: name,
+    Start: start,
+    End: document.getElementById('f-end').value || null,
+    Location: document.getElementById('f-location').value.trim(),
+    Time: document.getElementById('f-time').value.trim(),
+    Tag: document.getElementById('f-tag').value,
+    Desc: document.getElementById('f-desc').value.trim(),
+    URL: document.getElementById('f-url').value.trim() || null,
+    Tickets: document.getElementById('f-tickets').value,
+  };
+  // Remove nulls
+  Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
+
+  const btn = document.getElementById('save-btn');
+  btn.textContent = 'saving...';
+  btn.classList.add('saving');
+  document.getElementById('modal-error').style.display = 'none';
+
+  try {
+    if (editingId) {
+      await updateRecord(currentTable, editingId, fields);
+    } else {
+      await createRecord(currentTable, fields);
+    }
+    closeModal();
+    await load();
+  } catch(e) {
+    btn.textContent = 'save';
+    btn.classList.remove('saving');
+    document.getElementById('modal-error').textContent = 'Save failed. Check your connection and try again.';
+    document.getElementById('modal-error').style.display = 'block';
+    console.error(e);
+  }
+}
+
+function promptDelete(id) {
+  const card = document.querySelector('.event-card[data-id="' + id + '"]');
+  if (!card) return;
+  const existing = card.querySelector('.delete-confirm');
+  if (existing) { existing.remove(); return; }
+  const confirmEl = document.createElement('div');
+  confirmEl.className = 'delete-confirm';
+  confirmEl.style.cssText = 'position:absolute;bottom:10px;right:10px;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:DM Mono,monospace;color:var(--text-muted);z-index:10;box-shadow:0 2px 12px rgba(0,0,0,0.08);';
+  confirmEl.innerHTML = '<span>remove?</span>'
+    + '<button onclick="confirmDelete(\'' + id + '\')" style="font-family:DM Mono,monospace;font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid #fcc;background:#fee;color:#c00;cursor:pointer;">yes</button>'
+    + '<button onclick="this.closest(\'.delete-confirm\').remove()" style="font-family:DM Mono,monospace;font-size:11px;padding:3px 10px;border-radius:5px;border:1px solid var(--border-strong);background:transparent;color:var(--text-muted);cursor:pointer;">no</button>';
+  card.style.position = 'relative';
+  card.appendChild(confirmEl);
+}
+
+async function confirmDelete(id) {
+  try {
+    await deleteRecord(currentTable, id);
+    await load();
+  } catch(e) {
+    alert('Delete failed. Check your connection and try again.');
+    console.error(e);
+  }
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+load();
+</script>
+</body>
+</html>
